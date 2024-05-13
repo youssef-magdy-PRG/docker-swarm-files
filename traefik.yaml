@@ -51,6 +51,12 @@ services:
     - /var/run/docker.sock:/var/run/docker.sock
     - /mnt/volume2/portainer:/data
     restart: unless-stopped
+    networks:
+    - traefik-net
+    deploy:
+      placement:
+        constraints:
+        - node.role==manager
 
 networks:
   traefik-net:
