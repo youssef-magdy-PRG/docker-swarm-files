@@ -1,4 +1,4 @@
-version: '3'
+version: '3.3'
 
 services:
   traefik-ingress:
@@ -16,12 +16,12 @@ services:
     ports:
     - "80:80"
     - "443:443" #for traefik dashboard
+    networks:
+    - traefik-net
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock:ro
     # Make sure the volume folder is created
     - '/mnt/data/traefik/acme.json:/le/acme.json'
-    networks:
-    - traefik-net
     deploy:
       labels:
       # Dashboard
@@ -47,12 +47,12 @@ services:
     image: portainer/portainer-ce:latest
     ports:
     - 9443:9443
+    networks:
+    - traefik-net
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
     - /mnt/volume2/portainer:/data
     restart: unless-stopped
-    networks:
-    - traefik-net
     deploy:
       placement:
         constraints:
