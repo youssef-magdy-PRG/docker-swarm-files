@@ -1,34 +1,6 @@
 version: '3.3'
 
 services:
-  my-app:
-    image: containous/whoami:v1.3.0
-    networks:
-    - traefik-net
-    deploy:
-      labels:
-      - 'traefik.enable=true'
-      # Change the host url here
-      - 'traefik.http.services.my-app.loadbalancer.server.port=8082'
-
-  portainer:
-    image: portainer/portainer-ce:latest
-    ports:
-    - 9443:9443
-    networks:
-    - traefik-net
-    volumes:
-    - /var/run/docker.sock:/var/run/docker.sock
-    - /mnt/volume2/portainer:/data
-    restart: unless-stopped
-    deploy:
-      placement:
-        constraints:
-        - node.role==manager
-      labels:
-      - 'traefik.enable=true'
-      # Change the host url here
-      - 'traefik.http.services.my-app.loadbalancer.server.port=9443'
   traefik-ingress:
     image: traefik:v3.0
     command:
@@ -37,6 +9,9 @@ services:
     - "--providers.docker"
     - "--providers.docker.exposedbydefault=false"
     - "--providers.docker.swarmmode=true"
+    - "--providers.docker.swarmModeRefreshSeconds=30"
+    - "--ping=true"
+    - "--accesslog=true"
     - "--providers.docker.network=traefik-net"
     - "--api"
     - "--api.insecure=true"
@@ -44,8 +19,6 @@ services:
     ports:
     - "80:80"
     - "8443:8080" #for traefik dashboard
-    - "9000:9433"
-    - "8000:8082"
     networks:
     - traefik-net
     volumes:
@@ -56,12 +29,9 @@ services:
       labels:
       # Dashboard
       - 'traefik.enable=true'
-      - 'traefik.http.services.traefik.loadbalancer.server.port=8080'
       placement:
         constraints:
         - node.role==manager
-
-
 networks:
   traefik-net:
     external: true

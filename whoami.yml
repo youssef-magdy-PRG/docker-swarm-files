@@ -1,0 +1,19 @@
+version: '3.3'
+
+services:
+  whoami:
+    image: "containous/whoami:v1.3.0"
+    container_name: "simple-service"
+    networks:
+    - traefik-net
+    command:
+    - --port 8082
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.whoami.entrypoints=web"
+    - "traefik.http.services.whoami.loadbalancer.server.port=8082"
+    - "traefik.http.routers.whoami.service=whoami"
+    - "traefik.docker.network=traefik-net"
+networks:
+  traefik-net:
+    external: true
