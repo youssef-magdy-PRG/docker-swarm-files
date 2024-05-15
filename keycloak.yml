@@ -1,0 +1,40 @@
+verison '3.3'
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.4
+    environment:
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: DM7y7dn5r^bGJ)79
+      KEYCLOAK_HTTP_PORT: 8080
+      KEYCLOAK_HTTPS_PORT: 8443
+      KEYCLOAK_LOGLEVEL: INFO
+      DB_VENDOR: mysql
+      DB_ADDR: database.hl.local
+      DB_PORT: 3306
+      DB_DATABASE: keycloak_swarm
+      DB_USER: keycloak_swarm
+      DB_PASSWORD: DM7y7dn5r^bGJ)79
+    networks:
+      - traefik-net
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock:ro # Traefik can listen to the Docker events
+    restart: unless-stopped
+
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        max_replicas_per_node: 1
+      placement:
+        constraints:
+        - node.role == worker
+      labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.keycloak.rule= PathPrefix(`/keycloak`)"
+      - "traefik.http.routers.keycloak.entrypoints=web"
+      - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
+      - "traefik.docker.network=traefik-net"
+networks:
+  traefik-net:
+    external: true
