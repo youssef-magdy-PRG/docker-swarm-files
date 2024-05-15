@@ -5,7 +5,7 @@ services:
     image: quay.io/keycloak/keycloak:24.0.4
     environment:
       KEYCLOAK_USER: admin
-      KEYCLOAK_PASSWORD: DM7y7dn5r^bGJ)79
+      KEYCLOAK_PASSWORD: "${KEYCLOAK_PASSWORD}"
       KEYCLOAK_HTTP_PORT: 8080
       KEYCLOAK_HTTPS_PORT: 8443
       KEYCLOAK_LOGLEVEL: INFO
@@ -14,7 +14,7 @@ services:
       DB_PORT: 3306
       DB_DATABASE: keycloak_swarm
       DB_USER: keycloak_swarm
-      DB_PASSWORD: DM7y7dn5r^bGJ)79
+      DB_PASSWORD: "${KEYCLOAK_PASSWORD}"
     networks:
       - traefik-net
     volumes:
